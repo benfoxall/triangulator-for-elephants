@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Triangles</title>
+  </head>
+  <body>
+    <h1>triangulator for elephants</h1>
+
+    <canvas id="canvas" width="800" height="583"></canvas>
+
+    <img src="elephant.jpg" id="elephant" alt="" />
+
+    <script type="text/javascript" src="delaunay.js"></script>
+
+    <script type="text/javascript">
+    // elephant.addEventListener('load', function(){
+
+      var ctx = canvas.getContext('2d')
+      ctx.drawImage(elephant, 0, 0)
+
+      var image = ctx.getImageData(0,0,800,583)
+
+      ctx.clearRect(0,0,800,583)
+
+      var points = Array.from({length:600}, _ => {
+
+        var x = Math.random() * 800
+        var y = Math.random() * 583
+
+        return [x,y]
+      })
+
+      var triangulated = Delaunay.triangulate(points)
+
+
+
+
+      function componentToHex(c) {
+          var hex = (Math.floor(c||0)%255).toString(16)
+          return hex.length == 1 ? "0" + hex : hex;
+      }
+
+      function rgbToHex(r, g, b) {
+          return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+      }
+
+      function toC(id) {
+        var r = id >> 16
+        var g = id >> 8
+        var b = id
+        //
+        // var r = id % 255
+        // var g = ((id << 4) & 0xff)
+        // var b = (id << 8) & 0xff
+
+        return rgbToHex(r,g,b)
+      }
+
+
+
+
+
+      for (var i = 0; i < triangulated.length; i+=3) {
+
+        var a = points[triangulated[i]]
+        var b = points[triangulated[i+1]]
+        var c = points[triangulated[i+2]]
+
+        // var colour = '#' + i.toString(16)
+        // while(colour.length < 7) {
+        //   colour += '0'
+        // }
+
+        // colour = `rgb(${i % 255}, ${i }, 0)`
+
+        var colour = toC(i/3)
+
+        // console.log(colour)
+
+        ctx.fillStyle = colour;
+
+        ctx.beginPath()
+        ctx.moveTo(a[0], a[1])
+        ctx.lineTo(b[0], b[1])
+        ctx.lineTo(c[0], c[1])
+        ctx.fill()
+      }
+
+
+      var triangle = ctx.getImageData(0,0,800,583)
+      //
+      var red = [], green = [], blue = [], count = []
+
+      for (var i = 0; i < triangulated.length/3; i++) {
+        red[i] = green[i] = blue[i] = count[i] = 0
+      }
+
+      for (var x = 0; x < 800; x++) {
+        for (var y = 0; y < 583; y++) {
+
+          var i = (x + (y * 800)) * 4
+
+          if(triangle.data[i + 3]) {
+
+            var index = triangle.data[i + 2] +
+              (triangle.data[i + 1] * 255) +
+              (triangle.data[i] * 255 * 255)
+            // if(index) console.log(index)
+              // + (triangle.data[i+2] * 255 * 255)
+
+              // if(i == 300)
+              //   console.log(index)
+
+            red[index] += image.data[i]
+            green[index] += image.data[i + 1]
+            blue[index] += image.data[i + 2]
+            count[index] = count[index] + 1
+          }
+
+        }
+      }
+      //
+      console.log(red, green, blue)
+
+
+
+      for (var i = 0; i < triangulated.length; i+=3) {
+        // continue
+
+        var a = points[triangulated[i]]
+        var b = points[triangulated[i+1]]
+        var c = points[triangulated[i+2]]
+
+
+        // var colour = `rgb(${~~(red[i]/count[i])},${~~(green[i]/count[i])},${~~(blue[i]/count[i])})`
+
+        var t = i/3
+
+        var colour = rgbToHex(
+          red[t]/count[t],
+          green[t]/count[t],
+          blue[t]/count[t]
+        )
+
+        ctx.fillStyle = colour
+
+        ctx.beginPath()
+        ctx.moveTo(a[0], a[1])
+        ctx.lineTo(b[0], b[1])
+        ctx.lineTo(c[0], c[1])
+        ctx.fill()
+      }
+
+
+
+      // ctx.fillStyle = `rgb(${~~(red/count)},${~~(green/count)},${~~(blue/count)})`
+      //
+      // ctx.beginPath()
+      //
+      // ctx.moveTo(100,100)
+      // ctx.lineTo(300,200)
+      // ctx.lineTo(0,300)
+      //
+      // ctx.fill()
+
+
+    // })
+
+
+
+    </script>
+
+  </body>
+</html>
