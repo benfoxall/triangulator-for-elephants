@@ -119,8 +119,8 @@
           red[i] = green[i] = blue[i] = count[i] = 0
         }
 
-        for (var x = 0; x < w; x++) {
-          for (var y = 0; y < h; y++) {
+        for (var x = 0; x < w; x+=9) {
+          for (var y = 0; y < h; y+=9) {
 
             var i = (x + (y * w)) * 4
 
@@ -173,30 +173,8 @@
       }
 
 
-
-
-      // ctx.fillStyle = `rgb(${~~(red/count)},${~~(green/count)},${~~(blue/count)})`
-      //
-      // ctx.beginPath()
-      //
-      // ctx.moveTo(100,100)
-      // ctx.lineTo(300,200)
-      // ctx.lineTo(0,300)
-      //
-      // ctx.fill()
-
-
-    // })
-
-
-
     var img = new Image()
-    img.addEventListener("load", function() {
-      setTimeout(function(){
-          drawImage(img)
-      },1000)
-
-    }, false)
+    img.addEventListener("load", drawImage.bind(this,img), false)
     img.src = 'elephant.jpg'
 
 
