@@ -21,8 +21,8 @@
       if(window.devicePixelRatio) {
         canvas.style.width = w + 'px'
         canvas.style.height = h + 'px'
-        w = canvas.width = w * window.devicePixelRatio
-        h = canvas.height = h * window.devicePixelRatio
+        w = canvas.width = ~~(w * window.devicePixelRatio)
+        h = canvas.height = ~~(h * window.devicePixelRatio)
       }
 
       var ctx = canvas.getContext('2d')
